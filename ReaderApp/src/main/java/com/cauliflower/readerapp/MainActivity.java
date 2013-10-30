@@ -10,11 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.cauliflower.readerapp.asynctasks.GetUsersTask;
 import com.cauliflower.readerapp.asynctasks.HttpUtils;
+import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 
@@ -60,7 +63,7 @@ public class MainActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements UsersTaskInterface{
         private TextView textView;
         public PlaceholderFragment() {
         }
@@ -70,9 +73,27 @@ public class MainActivity extends Activity {
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             textView = (TextView) rootView.findViewById(R.id.requestId);
-            textView.setText(HttpUtils.getDataAsJSON("http://plato.cs.virginia.edu/~cs4720f13cauliflower/TextToSpeech/developers/users"));
-
             return rootView;
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            new GetUsersTask(this).execute("http://plato.cs.virginia.edu/~cs4720f13cauliflower/TextToSpeech/developers/users");
+        }
+
+        @Override
+        public void onUsersAdded(ArrayList<User> userList) {
+
+        }
+
+        @Override
+        public void onUsersReceived(ArrayList<User> userList) {
+            String users= "";
+            for(User user: userList) {
+                users += user.toString();
+            }
+            textView.append(users);
         }
     }
 

@@ -24,5 +24,37 @@ android {
         minSdkVersion 14
         targetSdkVersion 18
     }
+
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+        }
+
+        unsigned{
+            storePassword = ""
+            keyAlias = ""
+            keyPassword = ""
+        }
+
+        release {
+            storeFile file(System.console().readLine("\n\$ Enter keystore path: "))
+            storePassword System.console().readLine("\n\$ Enter keystore password: ")
+            keyAlias System.console().readLine("\n\$ Enter key alias: ")
+            keyPassword System.console().readLine("\n\$ Enter key password: ")
+        }
+    }
+
+    buildTypes{
+        unsigned {
+            debuggable true
+            jniDebugBuild true
+            signingConfig signingConfigs.unsigned
+        }
+
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
 }
 

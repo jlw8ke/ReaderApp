@@ -41,5 +41,8 @@ public class User {
         this.email = email;
     }
 
+    public String toString(){
+        return "username: " + username + " \nfirstname: " + firstname + "\nlastname: " + lastname + "\nemail: " + email;
+    }
 }
 

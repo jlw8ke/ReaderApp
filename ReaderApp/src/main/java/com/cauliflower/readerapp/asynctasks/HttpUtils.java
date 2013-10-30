@@ -36,7 +36,7 @@ public class HttpUtils {
     private static InputStream getData(String strURL, int connectionTimeout, int socketTimeout) {
         HttpClient client;
         HttpResponse response;
-        InputStream result;
+        InputStream result = null;
 
         HttpParams httpParameters = new BasicHttpParams();
 
@@ -50,6 +50,12 @@ public class HttpUtils {
         try {
             response = client.execute(new HttpGet(strURL));
             result = response.getEntity().getContent();
+
+            //Check for redirect
+            int statusCode = response.getStatusLine().getStatusCode();
+            if(statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY)
+                result = null;
+
         } catch (Exception e) {
             result = null;
         }

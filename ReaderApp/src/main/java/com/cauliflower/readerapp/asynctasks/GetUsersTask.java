@@ -6,43 +6,39 @@ import android.util.Log;
 import com.cauliflower.readerapp.User;
 
 import java.util.ArrayList;
+
 import com.google.gson.*;
 
 /**
  * Created by jlw8k_000 on 10/29/13.
  */
-public class GetUsersTask extends AsyncTask<String, Integer, String> {
-    @Override
-    protected void onPreExecute() {
+public class GetUsersTask extends AsyncTask<String, Integer, ArrayList<User>> {
+
+    private UsersTaskInterface m_Interface;
+    public GetUsersTask(UsersTaskInterface uti){
+        m_Interface = uti;
     }
 
     @Override
-    protected String doInBackground(String... params) {
+    protected ArrayList<User> doInBackground(String... params) {
         String url = params[0];
         ArrayList<User> userList = new ArrayList<User>();
-
-        /*try {
+        try {
             String webJSON = HttpUtils.getDataAsJSON(url);
             Log.d("JSON", webJSON);
             Gson gson = new Gson();
-
             JsonParser parser = new JsonParser();
             JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
-
             for (JsonElement obj : Jarray) {
-                Course cse = gson.fromJson(obj, Course.class);
-                Log.d("COURSE", cse.toString());
-                lcs.add(cse);
+                User user = gson.fromJson(obj, User.class);
+                Log.d("USER", user.toString());
+                userList.add(user);
             }
-
         } catch (Exception e) {
-            Log.e("LousList", "JSONPARSE:" + e.toString());
+            Log.e("GetUsersTask", "Parse Error");
+            e.printStackTrace();
         }
-
-        values.clear();
-        values.addAll(lcs);*/
-
-        return "Done!";
+        return userList;
     }
 
     @Override
@@ -51,9 +47,7 @@ public class GetUsersTask extends AsyncTask<String, Integer, String> {
     }
 
     @Override
-    protected void onPostExecute(String result) {
-        // tells the adapter that the underlying data has changed and it
-        // needs to update the view
-        //adapter.notifyDataSetChanged();
+    protected void onPostExecute(ArrayList<User> users) {
+        m_Interface.onUsersReceived(users);
     }
 }
