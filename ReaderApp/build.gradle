@@ -25,17 +25,7 @@ android {
         targetSdkVersion 18
     }
 
-    signingConfigs {
-        debug {
-            storeFile file("debug.keystore")
-        }
-
-        unsigned{
-            storePassword = ""
-            keyAlias = ""
-            keyPassword = ""
-        }
-
+    /*signingConfigs {
         release {
             storeFile file(System.console().readLine("\n\$ Enter keystore path: "))
             storePassword System.console().readLine("\n\$ Enter keystore password: ")
@@ -45,16 +35,9 @@ android {
     }
 
     buildTypes{
-        unsigned {
-            debuggable true
-            jniDebugBuild true
-            signingConfig signingConfigs.unsigned
-        }
-
         release {
             signingConfig signingConfigs.release
         }
-    }
-
+    }*/
 }
 

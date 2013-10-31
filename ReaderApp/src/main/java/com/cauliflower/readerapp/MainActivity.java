@@ -1,6 +1,7 @@
 package com.cauliflower.readerapp;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,10 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.cauliflower.readerapp.asynctasks.GetUsersTask;
 import com.cauliflower.readerapp.asynctasks.HttpUtils;
+import com.cauliflower.readerapp.asynctasks.TestDialogFragment;
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 
 import java.io.IOException;
@@ -36,8 +39,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-
-
     }
 
     @Override
@@ -56,6 +57,7 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
+            case R.id.action_login:
         }
         return super.onOptionsItemSelected(item);
     }
@@ -65,6 +67,7 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment implements UsersTaskInterface{
         private TextView textView;
+        private Button testButton;
         public PlaceholderFragment() {
         }
 
@@ -73,13 +76,21 @@ public class MainActivity extends Activity {
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             textView = (TextView) rootView.findViewById(R.id.requestId);
+            testButton = (Button) rootView.findViewById(R.id.testRequest);
             return rootView;
         }
 
         @Override
         public void onResume() {
             super.onResume();
-            new GetUsersTask(this).execute("http://plato.cs.virginia.edu/~cs4720f13cauliflower/TextToSpeech/developers/users");
+            testButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    DialogFragment test = TestDialogFragment.newInstance();
+                    test.setTargetFragment(PlaceholderFragment.this, 0);
+                    test.show(getFragmentManager(), "user_dialog");
+                }
+            });
         }
 
         @Override
@@ -93,7 +104,7 @@ public class MainActivity extends Activity {
             for(User user: userList) {
                 users += user.toString();
             }
-            textView.append(users);
+            textView.setText(users);
         }
     }
 

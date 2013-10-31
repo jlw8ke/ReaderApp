@@ -2,7 +2,18 @@
 <resources>
 
     <string name="app_name">ReaderApp</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Ok</string>
+
     <string name="hello_world">Hello world!</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="register">Register</string>
+
+    <string name="username_hint">Enter username</string>
+    <string name="password_hint">Enter password</string>
+    <string name="invalid_login">Invaling login credentials</string>
+    <string name="connection_error">Connection error</string>
     <string name="action_settings">Settings</string>
 
 </resources>
