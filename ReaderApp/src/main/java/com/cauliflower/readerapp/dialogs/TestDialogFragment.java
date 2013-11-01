@@ -1,6 +1,5 @@
-package com.cauliflower.readerapp.asynctasks;
+package com.cauliflower.readerapp.dialogs;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,8 +12,9 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import com.cauliflower.readerapp.R;
+import com.cauliflower.readerapp.asynctasks.GetUsersTask;
+import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**

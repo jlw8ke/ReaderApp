@@ -12,14 +12,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.cauliflower.readerapp.asynctasks.GetUsersTask;
-import com.cauliflower.readerapp.asynctasks.HttpUtils;
-import com.cauliflower.readerapp.asynctasks.TestDialogFragment;
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
+import com.cauliflower.readerapp.dialogs.TestDialogFragment;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
@@ -58,6 +53,7 @@ public class MainActivity extends Activity {
             case R.id.action_settings:
                 return true;
             case R.id.action_login:
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
