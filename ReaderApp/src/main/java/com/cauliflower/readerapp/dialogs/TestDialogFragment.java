@@ -61,7 +61,7 @@ public class TestDialogFragment extends DialogFragment {
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new GetUsersTask(m_Interface).execute("http://plato.cs.virginia.edu/~cs4720f13cauliflower/TextToSpeech/developers/users");
+                new GetUsersTask(m_Interface).execute("http://plato.cs.virginia.edu/~cs4720f13cauliflower/TextToSpeech/developers/users/" + Integer.toString(user_id));
                 dismiss();
             }
         });
