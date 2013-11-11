@@ -9,14 +9,19 @@ import java.util.ArrayList;
 
 import com.google.gson.*;
 
+import org.apache.http.NameValuePair;
+
 /**
  * Created by jlw8k_000 on 10/29/13.
  */
 public class GetUsersTask extends AsyncTask<String, Integer, ArrayList<User>> {
 
     private UsersTaskInterface m_Interface;
-    public GetUsersTask(UsersTaskInterface uti){
+    private ArrayList<NameValuePair> m_Params;
+
+    public GetUsersTask(UsersTaskInterface uti, ArrayList<NameValuePair> params){
         m_Interface = uti;
+        m_Params = params;
     }
 
     @Override
@@ -24,7 +29,7 @@ public class GetUsersTask extends AsyncTask<String, Integer, ArrayList<User>> {
         String url = params[0];
         ArrayList<User> userList = new ArrayList<User>();
         try {
-            String webJSON = HttpUtils.getDataAsJSON(url);
+            String webJSON = HttpUtils.getDataAsJSON(url, m_Params);
             Log.d("JSON", webJSON);
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();

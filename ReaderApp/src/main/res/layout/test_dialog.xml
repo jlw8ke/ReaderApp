@@ -12,6 +12,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <RadioButton
+            android:id="@+id/choosePlato"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="onRadioButtonClick"/>
+
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -36,6 +43,39 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:gravity="center_horizontal" />
+
+
+
+    <!-- Title -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+            android:id="@+id/choosePython"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClick"/>
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/ic_social_person" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textSize="22dp"
+            android:text="Test Python Server"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/holo_blue_light" />
+    </LinearLayout>
+    <EditText
+        android:id="@+id/python_search"
+        android:hint="Enter title of article"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/goButton"
