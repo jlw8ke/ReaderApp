@@ -6,18 +6,20 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
+    <ToggleButton
+        android:id="@+id/serverChoice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="Plato Server"
+        android:textOn="GAE Server"/>
+
     <!-- Title -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/choosePlato"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:onClick="onRadioButtonClick"/>
+
 
         <ImageView
             android:layout_width="60dp"
@@ -51,11 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <RadioButton
-            android:id="@+id/choosePython"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onRadioButtonClick"/>
+
 
         <ImageView
             android:layout_width="60dp"
