@@ -3,13 +3,11 @@ package com.cauliflower.readerapp.asynctasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.cauliflower.readerapp.User;
+import com.cauliflower.readerapp.objects.User;
 
 import java.util.ArrayList;
 
 import com.google.gson.*;
-
-import org.apache.http.NameValuePair;
 
 /**
  * Created by jlw8k_000 on 10/29/13.
@@ -17,11 +15,9 @@ import org.apache.http.NameValuePair;
 public class GetUsersTask extends AsyncTask<String, Integer, ArrayList<User>> {
 
     private UsersTaskInterface m_Interface;
-    private ArrayList<NameValuePair> m_Params;
 
-    public GetUsersTask(UsersTaskInterface uti, ArrayList<NameValuePair> params){
+    public GetUsersTask(UsersTaskInterface uti){
         m_Interface = uti;
-        m_Params = params;
     }
 
     @Override
@@ -29,7 +25,7 @@ public class GetUsersTask extends AsyncTask<String, Integer, ArrayList<User>> {
         String url = params[0];
         ArrayList<User> userList = new ArrayList<User>();
         try {
-            String webJSON = HttpUtils.getDataAsJSON(url, m_Params);
+            String webJSON = HttpUtils.getDataAsJSON(url, null);
             Log.d("JSON", webJSON);
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();

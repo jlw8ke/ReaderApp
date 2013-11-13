@@ -52,6 +52,7 @@ public class HttpUtils {
         if(params != null)
             strURL += "?" + URLEncodedUtils.format(params, "utf-8");
 
+        Log.i("HttpUtils", "The url for the GET: " + strURL);
         try {
             response = client.execute(new HttpGet(strURL));
             result = response.getEntity().getContent();

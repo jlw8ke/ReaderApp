@@ -1,4 +1,4 @@
-package com.cauliflower.readerapp;
+package com.cauliflower.readerapp.objects;
 
 /**
  * Created by jlw8k_000 on 10/30/13.

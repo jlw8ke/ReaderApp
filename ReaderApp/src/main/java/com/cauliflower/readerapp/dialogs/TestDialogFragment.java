@@ -82,7 +82,7 @@ public class TestDialogFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if(!serverChoice.isChecked())
-                    new GetUsersTask(m_UsersInterface, null).execute(PLATO + Integer.toString(user_id));
+                    new GetUsersTask(m_UsersInterface).execute(PLATO + Integer.toString(user_id));
                 else {
                     ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
                     params.add(new BasicNameValuePair("query", searchBox.getText().toString()));

@@ -1,15 +1,15 @@
-package com.cauliflower.readerapp;
+package com.cauliflower.readerapp.objects;
 
 import java.util.Date;
 
 /**
  * Created by jlw8k_000 on 11/12/13.
  */
-public class PDF2SpeechFile {
+public class AppFile {
 
-    String author;
-    String content;
-    Date submitDate;
+    private String author;
+    private String content;
+    private Date submitDate;
 
     public String getAuthor() {
         return author;

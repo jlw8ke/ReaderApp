@@ -1,6 +1,6 @@
 package com.cauliflower.readerapp.asynctasks;
 
-import com.cauliflower.readerapp.User;
+import com.cauliflower.readerapp.objects.User;
 
 import java.util.ArrayList;
 

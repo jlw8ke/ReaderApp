@@ -12,8 +12,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.cauliflower.readerapp.asynctasks.SearchTaskInterface;
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 import com.cauliflower.readerapp.dialogs.TestDialogFragment;
+import com.cauliflower.readerapp.objects.AppFile;
+import com.cauliflower.readerapp.objects.User;
 
 import java.util.ArrayList;
 
@@ -61,7 +64,7 @@ public class MainActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment implements UsersTaskInterface{
+    public static class PlaceholderFragment extends Fragment implements UsersTaskInterface, SearchTaskInterface{
         private TextView textView;
         private Button testButton;
         public PlaceholderFragment() {
@@ -101,6 +104,15 @@ public class MainActivity extends Activity {
                 users += user.toString();
             }
             textView.setText(users);
+        }
+
+        @Override
+        public void onSearchReceived(ArrayList<AppFile> files) {
+            String searchResults = "";
+            for(AppFile file : files) {
+                searchResults += file.toString();
+            }
+            textView.setText(searchResults);
         }
     }
 

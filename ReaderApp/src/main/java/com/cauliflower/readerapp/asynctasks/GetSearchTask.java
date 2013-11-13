@@ -3,21 +3,20 @@ package com.cauliflower.readerapp.asynctasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.cauliflower.readerapp.PDF2SpeechFile;
+import com.cauliflower.readerapp.objects.AppFile;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 import org.apache.http.NameValuePair;
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 
 /**
  * Created by jlw8k_000 on 11/12/13.
  */
-public class GetSearchTask extends AsyncTask<String, Integer, ArrayList<PDF2SpeechFile>>  {
+public class GetSearchTask extends AsyncTask<String, Integer, ArrayList<AppFile>>  {
 
     private SearchTaskInterface m_Interface;
     private ArrayList<NameValuePair> m_Params;
@@ -28,19 +27,19 @@ public class GetSearchTask extends AsyncTask<String, Integer, ArrayList<PDF2Spee
     }
 
     @Override
-    protected ArrayList<PDF2SpeechFile> doInBackground(String... params) {
+    protected ArrayList<AppFile> doInBackground(String... params) {
         String url = params[0];
-        ArrayList<PDF2SpeechFile> searchResults = new ArrayList<PDF2SpeechFile>();
+        ArrayList<AppFile> searchResults = new ArrayList<AppFile>();
 
         try {
             String webJSON = HttpUtils.getDataAsJSON(url, m_Params);
-            Log.d("JSON", webJSON);
+            Log.i("JSON", webJSON);
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();
             JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
             for (JsonElement obj : Jarray) {
-                PDF2SpeechFile file = gson.fromJson(obj, PDF2SpeechFile.class);
-                Log.d("FILE", file.toString());
+                AppFile file = gson.fromJson(obj, AppFile.class);
+                Log.i("FILE", file.toString());
                 searchResults.add(file);
             }
         } catch (Exception e) {
@@ -50,5 +49,8 @@ public class GetSearchTask extends AsyncTask<String, Integer, ArrayList<PDF2Spee
         return searchResults;
     }
 
-
+    @Override
+    protected void onPostExecute(ArrayList<AppFile> files) {
+        m_Interface.onSearchReceived(files);
+    }
 }
