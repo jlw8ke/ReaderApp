@@ -88,6 +88,7 @@ public class HttpUtils {
                 Log.e("HttpUtils", "Error converting result " + e.toString());
             }
         }
+        Log.d("HttpUtils", "Result: " + result);
         return result;
     }
 

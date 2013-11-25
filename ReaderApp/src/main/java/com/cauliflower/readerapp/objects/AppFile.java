@@ -11,6 +11,8 @@ public class AppFile {
     private String content;
     private Date submitDate;
 
+
+
     public String getAuthor() {
         return author;
     }

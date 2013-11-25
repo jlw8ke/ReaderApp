@@ -17,10 +17,15 @@ import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 import com.cauliflower.readerapp.dialogs.TestDialogFragment;
 import com.cauliflower.readerapp.objects.AppFile;
 import com.cauliflower.readerapp.objects.User;
+import com.dropbox.client2.session.Session;
 
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
+
+    final static private String APP_KEY = "s3voc9raoqvgdj6";
+    final static private String APP_SECRET = "ez81gny641pdtjq";
+    final static private Session.AccessType ACCESS_TYPE = Session.AccessType.DROPBOX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class MainActivity extends Activity {
         super.onResume();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         
@@ -55,8 +61,8 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
-            case R.id.action_login:
-                return true;
+            //case R.id.a:
+            //    return true;
         }
         return super.onOptionsItemSelected(item);
     }
