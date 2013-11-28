@@ -3,7 +3,10 @@ package com.cauliflower.readerapp;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,39 +20,62 @@ import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 import com.cauliflower.readerapp.dialogs.TestDialogFragment;
 import com.cauliflower.readerapp.objects.AppFile;
 import com.cauliflower.readerapp.objects.User;
+import com.dropbox.client2.*;
+import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
 
+    final private int MENU_LOGIN = 3;
+    final private int MENU_LOGOUT = 4;
+
+
+    //Dropbox Objects
     final static private String APP_KEY = "s3voc9raoqvgdj6";
     final static private String APP_SECRET = "ez81gny641pdtjq";
     final static private Session.AccessType ACCESS_TYPE = Session.AccessType.DROPBOX;
+    private DropboxAPI<AndroidAuthSession> mDBApi;
+
+    private static SharedPreferences m_SharedPreferences;
+    private static final String PROPERTY_CURRENT_USER = "property_current_user";
+    private User m_CurrentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        m_SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        loadSavedPreferences();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void loadSavedPreferences() {
+        m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem currentMenuItem;
+        if(m_CurrentUser == null)
+            currentMenuItem = menu.add(Menu.NONE, MENU_LOGIN, Menu.NONE, "Login");
+        else
+            currentMenuItem = menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout");
+        currentMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         return true;
     }
 
@@ -61,10 +87,23 @@ public class MainActivity extends Activity {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
-            //case R.id.a:
-            //    return true;
+            case R.id.action_new_file:
+                return true;
+            case R.id.action_load_file:
+                return true;
+            case MENU_LOGIN:
+                return true;
+            case MENU_LOGOUT:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     /**
