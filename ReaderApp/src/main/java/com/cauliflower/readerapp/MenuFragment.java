@@ -2,11 +2,15 @@ package com.cauliflower.readerapp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 /**
  * Created by jlw8k_000 on 11/30/13.
@@ -44,6 +48,8 @@ public class MenuFragment extends Fragment {
         m_ImportFileButton = (ImageButton) rootView.findViewById(R.id.menu_import_file);
         m_DropboxFileButton = (ImageButton) rootView.findViewById(R.id.menu_dropbox_file);
 
+        setLongClickListeners();
+
         m_NewFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,6 +63,10 @@ public class MenuFragment extends Fragment {
                 m_Interface.menuLoadFile();
             }
         });
+
+
+
+
 
         m_ImportFileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,5 +83,47 @@ public class MenuFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    private void setLongClickListeners() {
+        m_NewFileButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                repositionAndShowToast(getString(R.string.home_new_file), view, getActivity());
+                return true;
+            }
+        });
+
+        m_LoadFileButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                repositionAndShowToast(getString(R.string.home_load_file), view, getActivity());
+                return true;
+            }
+        });
+
+        m_ImportFileButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                repositionAndShowToast(getString(R.string.home_import_file), view, getActivity());
+                return true;
+            }
+        });
+
+        m_DropboxFileButton.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                repositionAndShowToast(getString(R.string.home_dropbox_file), view, getActivity());
+                return true;
+            }
+        });
+    }
+    private void repositionAndShowToast(String text, View v, Context context) {
+        int[] pos = new int[2];
+        v.getLocationInWindow(pos);
+
+        Toast toast = Toast.makeText(context,text, Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.TOP | Gravity.LEFT, pos[0], pos[1]-v.getHeight());
+        toast.show();
     }
 }

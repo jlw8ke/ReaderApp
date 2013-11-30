@@ -3,12 +3,16 @@ package com.cauliflower.readerapp;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cauliflower.readerapp.asynctasks.SearchTaskInterface;
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
@@ -26,13 +31,19 @@ import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
 import com.dropbox.client2.session.Session;
 import com.google.gson.Gson;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface{
 
-    final private int MENU_LOGIN = 3;
-    final private int MENU_LOGOUT = 4;
+    final private int MENU_NEW_FILE = 0;
+    final private int MENU_LOAD_FILE = 1;
+    final private int MENU_IMPORT_FILE = 2;
+    final private int MENU_DROPBOX_FILE = 3;
+    final private int MENU_LOGIN = 4;
+    final private int MENU_LOGOUT = 5;
 
     //Dropbox Objects
     final static private String APP_KEY = "s3voc9raoqvgdj6";
@@ -141,21 +152,68 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     */
     @Override
     public void menuNewFile() {
-
+        showChooser(MENU_NEW_FILE);
     }
 
     @Override
     public void menuLoadFile() {
-
+        showChooser(MENU_LOAD_FILE);
     }
 
     @Override
     public void menuImportFile() {
-
+        showChooser(MENU_IMPORT_FILE);
     }
 
     @Override
     public void menuDropboxFile() {
+        showChooser(MENU_DROPBOX_FILE);
+    }
 
+    private static final int NEW_FILE_REQUEST_CODE = 6384;
+    private void showChooser(int choice){
+        Intent target = FileUtils.createGetContentIntent();
+        switch(choice) {
+            case MENU_NEW_FILE:
+                Intent intent = Intent.createChooser(target, getString(R.string.home_new_file));
+                try {
+                    startActivityForResult(intent, NEW_FILE_REQUEST_CODE);
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case MENU_LOAD_FILE:
+                break;
+            case MENU_IMPORT_FILE:
+                break;
+            case MENU_DROPBOX_FILE:
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case NEW_FILE_REQUEST_CODE:
+                if(resultCode == RESULT_OK) {
+                    if(data != null) {
+                        final Uri uri = data.getData();
+                        try {
+                            // Create a file instance from the URI
+                            final File file = FileUtils.getFile(uri);
+                            Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                        } catch (Exception e) {
+                            Log.e("MainActivity", "File select error", e);
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
