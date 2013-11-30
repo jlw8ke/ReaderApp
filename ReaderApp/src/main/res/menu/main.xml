@@ -1,10 +1,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/action_new_file"
-        android:title="@string/action_new"
-        android:showAsAction="ifRoom" />
-    <item android:id="@+id/action_load_file"
-        android:title="@string/action_load"
-        android:showAsAction="ifRoom" />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:icon="@drawable/ic_action_settings"

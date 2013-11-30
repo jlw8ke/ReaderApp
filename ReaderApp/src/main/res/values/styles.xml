@@ -1,8 +1,49 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/ActionBar</item>
+        <item name="android:windowBackground">@color/default_background_color</item>
+    </style>
+
+    <style name="ActionBar" parent="android:Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@android:color/holo_orange_dark</item>
+            <item name="android:titleTextStyle">@style/ActionBar.TitleTextStyle</item>
+    </style>
+
+    <style name="ActionBar.Widget" parent="android:Theme.Holo.Light">
+        <item name="android:textColorPrimary">@color/title</item>
+        <item name="android:textColor">@color/title</item>
+        <item name="android:textColorHint">@color/hint</item>
+    </style>
+
+    <style name="ActionBar.TitleTextStyle" parent="android:TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/title</item>
+    </style>
+
+    <style name="ButtonStyle">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:background">@drawable/transparent_button</item>
+    </style>
+
+    <style name="Box_outer">
+        <item name="android:layout_marginTop">?android:actionBarSize</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:layout_marginRight">0dp</item>
+    </style>
+
+    <style name="Box_inner">
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:layout_marginBottom">20dp</item>
+    </style>
+
+    <style name="TextureTheme">
+        <item name="android:background">@drawable/tweed_texture</item>
     </style>
 
 </resources>

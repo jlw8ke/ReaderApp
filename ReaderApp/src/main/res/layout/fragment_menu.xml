@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/Box_outer">
+
+    <FrameLayout
+        android:id="@+id/box_inner"
+        style="@style/Box_inner"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shadow" >
+
+    <LinearLayout
+        android:id="@+id/box_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/menu_new_file"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/home_new_file"
+            android:src="@drawable/ic_list" />
+
+        <ImageButton
+            android:id="@+id/menu_load_file"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/home_load_file"
+            android:src="@drawable/ic_load" />
+
+        <ImageButton
+            android:id="@+id/menu_import_file"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/home_import_file"
+            android:src="@drawable/ic_import" />
+
+        <ImageButton
+            android:id="@+id/menu_dropbox_file"
+            style="@style/ButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="@string/home_dropbox_file"
+            android:src="@drawable/ic_dropbox_trans" />
+    </LinearLayout>
+
+    </FrameLayout>
+
+
+
+</RelativeLayout>

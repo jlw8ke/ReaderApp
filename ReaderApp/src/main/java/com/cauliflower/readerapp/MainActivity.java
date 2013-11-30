@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,17 +24,15 @@ import com.cauliflower.readerapp.objects.AppFile;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
-import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface{
 
     final private int MENU_LOGIN = 3;
     final private int MENU_LOGOUT = 4;
-
 
     //Dropbox Objects
     final static private String APP_KEY = "s3voc9raoqvgdj6";
@@ -44,6 +44,9 @@ public class MainActivity extends Activity {
     private static final String PROPERTY_CURRENT_USER = "property_current_user";
     private User m_CurrentUser;
 
+    private DrawerLayout m_DrawerLayout;
+    private ActionBarDrawerToggle m_DrawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,20 +55,53 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container_menu, new MenuFragment())
+                    .add(R.id.left_drawer, new DrawerFragment())
                     .commit();
         }
         loadSavedPreferences();
+        setupHomeDrawer();
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
     }
 
     private void loadSavedPreferences() {
         m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
     }
 
+    private void setupHomeDrawer(){
+        m_DrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        m_DrawerToggle =  new ActionBarDrawerToggle(this, m_DrawerLayout, R.drawable.ic_navigation_drawer, R.string.drawer_open, R.string.drawer_closed) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        m_DrawerLayout.setDrawerListener(m_DrawerToggle);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        m_DrawerToggle.syncState();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        m_DrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -81,15 +117,8 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_settings:
-                return true;
-            case R.id.action_new_file:
-                return true;
-            case R.id.action_load_file:
                 return true;
             case MENU_LOGIN:
                 return true;
@@ -97,7 +126,6 @@ public class MainActivity extends Activity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
@@ -106,59 +134,29 @@ public class MainActivity extends Activity {
         super.onResume();
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment implements UsersTaskInterface, SearchTaskInterface{
-        private TextView textView;
-        private Button testButton;
-        public PlaceholderFragment() {
-        }
+    /*
+    -----------------------------------------------------------------------------------
+    Menu Fragment Interface
+    -----------------------------------------------------------------------------------
+    */
+    @Override
+    public void menuNewFile() {
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            textView = (TextView) rootView.findViewById(R.id.requestId);
-            testButton = (Button) rootView.findViewById(R.id.testRequest);
-            return rootView;
-        }
 
-        @Override
-        public void onResume() {
-            super.onResume();
-            testButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    DialogFragment test = TestDialogFragment.newInstance();
-                    test.setTargetFragment(PlaceholderFragment.this, 0);
-                    test.show(getFragmentManager(), "user_dialog");
-                }
-            });
-        }
-
-        @Override
-        public void onUsersAdded(ArrayList<User> userList) {
-
-        }
-
-        @Override
-        public void onUsersReceived(ArrayList<User> userList) {
-            String users= "";
-            for(User user: userList) {
-                users += user.toString();
-            }
-            textView.setText(users);
-        }
-
-        @Override
-        public void onSearchReceived(ArrayList<AppFile> files) {
-            String searchResults = "";
-            for(AppFile file : files) {
-                searchResults += file.toString();
-            }
-            textView.setText(searchResults);
-        }
     }
 
+    @Override
+    public void menuLoadFile() {
+
+    }
+
+    @Override
+    public void menuImportFile() {
+
+    }
+
+    @Override
+    public void menuDropboxFile() {
+
+    }
 }
