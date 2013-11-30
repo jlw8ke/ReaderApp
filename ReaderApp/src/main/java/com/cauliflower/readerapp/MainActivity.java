@@ -142,7 +142,6 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     @Override
     public void menuNewFile() {
 
-
     }
 
     @Override
