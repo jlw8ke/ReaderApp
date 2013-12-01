@@ -1,4 +1,4 @@
-package com.cauliflower.readerapp;
+package com.cauliflower.readerapp.drawer;
 
 import android.content.Context;
 import android.util.AttributeSet;

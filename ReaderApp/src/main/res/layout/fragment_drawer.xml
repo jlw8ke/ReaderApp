@@ -99,7 +99,7 @@
                     android:layout_height="1dp"
                     android:background="@android:color/holo_blue_bright" />
 
-                <com.cauliflower.readerapp.NavigationDrawerListLayout
+                <com.cauliflower.readerapp.drawer.NavigationDrawerListLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"

@@ -1,8 +1,6 @@
 package com.cauliflower.readerapp;
 
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,19 +11,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cauliflower.readerapp.asynctasks.SearchTaskInterface;
-import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
-import com.cauliflower.readerapp.dialogs.TestDialogFragment;
-import com.cauliflower.readerapp.objects.AppFile;
+import com.cauliflower.readerapp.drawer.DrawerFragment;
+import com.cauliflower.readerapp.graphics.DrawingFragment;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -34,9 +26,8 @@ import com.google.gson.Gson;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.File;
-import java.util.ArrayList;
 
-public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface{
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, DrawingFragment.FileFragmentInterface{
 
     final private int MENU_NEW_FILE = 0;
     final private int MENU_LOAD_FILE = 1;
@@ -67,7 +58,8 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container_menu, new MenuFragment())
-                    .add(R.id.left_drawer, new DrawerFragment())
+                   // .add(R.id.container_main, new DrawingFragment())
+                   // .add(R.id.left_drawer, new DrawerFragment())
                     .commit();
         }
         loadSavedPreferences();
