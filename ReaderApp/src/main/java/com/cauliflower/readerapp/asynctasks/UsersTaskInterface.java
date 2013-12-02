@@ -10,4 +10,6 @@ import java.util.ArrayList;
 public interface UsersTaskInterface {
     public void onUsersAdded(ArrayList<User> userList);
     public void onUsersReceived(ArrayList<User> userList);
+    public void login(User user);
+    public void logout();
 }

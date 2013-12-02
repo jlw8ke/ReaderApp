@@ -32,7 +32,7 @@ public class GetSearchTask extends AsyncTask<String, Integer, ArrayList<AppFile>
         ArrayList<AppFile> searchResults = new ArrayList<AppFile>();
 
         try {
-            String webJSON = HttpUtils.getDataAsJSON(url, m_Params);
+            String webJSON = HttpUtils.GetDataAsJSON(url, m_Params);
             Log.i("JSON", webJSON);
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();

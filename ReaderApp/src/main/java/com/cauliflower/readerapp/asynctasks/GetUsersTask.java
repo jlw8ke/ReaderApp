@@ -25,7 +25,7 @@ public class GetUsersTask extends AsyncTask<String, Integer, ArrayList<User>> {
         String url = params[0];
         ArrayList<User> userList = new ArrayList<User>();
         try {
-            String webJSON = HttpUtils.getDataAsJSON(url, null);
+            String webJSON = HttpUtils.GetDataAsJSON(url, null);
             Log.d("JSON", webJSON);
             Gson gson = new Gson();
             JsonParser parser = new JsonParser();

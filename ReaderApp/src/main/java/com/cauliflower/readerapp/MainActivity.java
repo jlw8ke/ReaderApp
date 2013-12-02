@@ -1,6 +1,7 @@
 package com.cauliflower.readerapp;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,9 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
+import com.cauliflower.readerapp.dialogs.LoginDialogFragment;
 import com.cauliflower.readerapp.drawer.DrawerFragment;
-import com.cauliflower.readerapp.graphics.DrawingFragment;
-import com.cauliflower.readerapp.objects.PDFUtils;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -27,15 +28,16 @@ import com.google.gson.Gson;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 
-public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, FileFragment.FileFragmentInterface {
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, FileFragment.FileFragmentInterface, UsersTaskInterface {
+
+    private static final int NEW_FILE_REQUEST_CODE = 6384;
 
     final private int MENU_NEW_FILE = 0;
     final private int MENU_LOAD_FILE = 1;
     final private int MENU_IMPORT_FILE = 2;
     final private int MENU_DROPBOX_FILE = 3;
-    final private int MENU_LOGIN = 4;
-    final private int MENU_LOGOUT = 5;
 
     //Dropbox Objects
     final static private String APP_KEY = "s3voc9raoqvgdj6";
@@ -45,10 +47,13 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
 
     private static SharedPreferences m_SharedPreferences;
     private static final String PROPERTY_CURRENT_USER = "property_current_user";
+    private static final String PROPERTY_CURRENT_FILE = "property_current_file";
     private User m_CurrentUser;
+    private File m_CurrentFile;
 
     private DrawerLayout m_DrawerLayout;
     private ActionBarDrawerToggle m_DrawerToggle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +65,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
             getFragmentManager().beginTransaction()
                     .add(R.id.container_menu, new MenuFragment())
                    // .add(R.id.container_main, new DrawingFragment())
-                   // .add(R.id.left_drawer, new DrawerFragment())
+                    .add(R.id.left_drawer, new DrawerFragment())
                     .commit();
         }
         loadSavedPreferences();
@@ -70,9 +75,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         getActionBar().setHomeButtonEnabled(true);
     }
 
-    private void loadSavedPreferences() {
-        m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
-    }
+
 
     private void setupHomeDrawer(){
         m_DrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -97,25 +100,33 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         m_DrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem currentMenuItem;
-        if(m_CurrentUser == null)
-            currentMenuItem = menu.add(Menu.NONE, MENU_LOGIN, Menu.NONE, "Login");
-        else
-            currentMenuItem = menu.add(Menu.NONE, MENU_LOGOUT, Menu.NONE, "Logout");
-        currentMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        MenuItem login = menu.findItem(R.id.action_login);
+        MenuItem logout = menu.findItem(R.id.action_logout);
+
+        if(m_CurrentUser == null) {
+            if(login != null)
+                login.setVisible(true);
+            if(logout != null)
+                logout.setVisible(false);
+        } else {
+            if(login != null)
+                login.setVisible(false);
+            if(logout != null)
+                logout.setVisible(true);
+        }
         return true;
     }
 
@@ -124,13 +135,22 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
-            case MENU_LOGIN:
+            case R.id.action_login:
+                DialogFragment loginDialog = LoginDialogFragment.newInstance(ServerConstants.SERVER_LOGIN_DEBUG);
+                loginDialog.show(getFragmentManager(), LoginDialogFragment.TAG);
                 return true;
-            case MENU_LOGOUT:
+            case R.id.action_logout:
+                logout();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    private void loadSavedPreferences() {
+        m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
+        m_CurrentFile = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_FILE, null), File.class);
     }
 
     @Override
@@ -138,11 +158,25 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         super.onResume();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor editor = m_SharedPreferences.edit();
+        editor.putString(PROPERTY_CURRENT_USER, new Gson().toJson(m_CurrentUser, User.class));
+        editor.putString(PROPERTY_CURRENT_FILE, new Gson().toJson(m_CurrentFile, File.class));
+        editor.commit();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     /*
-    -----------------------------------------------------------------------------------
-    Menu Fragment Interface
-    -----------------------------------------------------------------------------------
-    */
+     -----------------------------------------------------------------------------------
+     Menu Fragment Interface
+     -----------------------------------------------------------------------------------
+     */
     @Override
     public void menuNewFile() {
         showChooser(MENU_NEW_FILE);
@@ -163,7 +197,6 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         showChooser(MENU_DROPBOX_FILE);
     }
 
-    private static final int NEW_FILE_REQUEST_CODE = 6384;
     private void showChooser(int choice){
         Intent target = FileUtils.createGetContentIntent();
         switch(choice) {
@@ -199,8 +232,9 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                             // Create a file instance from the URI
                             final File file = FileUtils.getFile(uri);
                             Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                            String content = PDFUtils.parsePDF(file.getAbsolutePath());
-                            System.out.println("File content: " + content);
+                            m_CurrentFile = file.getAbsoluteFile();
+                            uploadFile(m_CurrentFile);
+                            loadPDFIntoWindow();
                         } catch (Exception e) {
                             Log.e("MainActivity", "File select error", e);
                         }
@@ -210,5 +244,54 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
             default:
                 break;
         }
+    }
+
+    private void loadPDFIntoWindow() {
+        getFragmentManager().beginTransaction()
+            .add(R.id.container_main, new FileFragment())
+            .commit();
+    }
+
+    @Override
+    public File getCurrentFile() {
+        return m_CurrentFile;
+    }
+
+    private void uploadFile(File aFile) {
+
+    }
+
+    /*
+    -----------------------------------------------------------------------------------
+    UsersTaskInterface
+    -----------------------------------------------------------------------------------
+    */
+    @Override
+    public void onUsersAdded(ArrayList<User> userList) {
+
+    }
+
+    @Override
+    public void onUsersReceived(ArrayList<User> userList) {
+
+    }
+
+    @Override
+    public void login(User user) {
+        DialogFragment loginDialog = (DialogFragment) getFragmentManager().findFragmentByTag(LoginDialogFragment.TAG);
+
+        if(user != null) {
+            m_CurrentUser = user;
+            if(loginDialog != null)
+                loginDialog.dismiss();
+            Toast.makeText(this, getString(R.string.login_success) + " " + m_CurrentUser.getUsername(), Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, getString(R.string.login_failure), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void logout() {
+        m_CurrentUser = null;
     }
 }

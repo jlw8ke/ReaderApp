@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
+import java.io.File;
+
 /**
  * Created by jlw8k_000 on 12/1/13.
  */
@@ -15,7 +17,10 @@ import android.webkit.WebView;
 
 public class FileFragment extends Fragment{
 
+    private final String GOOGLE_DOCS = "https://docs.google.com/viewer?url=";
+
     public interface FileFragmentInterface {
+        public File getCurrentFile();
     }
 
     private WebView pdfView;
@@ -36,5 +41,18 @@ public class FileFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_file, container, false);
         pdfView = (WebView) rootView.findViewById(R.id.web_view);
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupPDFView();
+    }
+
+    private void setupPDFView() {
+        String location = m_Interface.getCurrentFile().getPath();
+        if(location.endsWith(".pdf")) {
+            pdfView.loadUrl(GOOGLE_DOCS + location);
+        }
     }
 }

@@ -1,11 +1,14 @@
 package com.cauliflower.readerapp.asynctasks;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 
 import android.util.Log;
+
+import com.cauliflower.readerapp.objects.User;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
@@ -14,17 +17,28 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jlw8k_000 on 10/29/13.
@@ -68,7 +82,7 @@ public class HttpUtils {
         return result;
     }
 
-    public static String getDataAsJSON(String strURL, ArrayList<NameValuePair> params) {
+    public static String GetDataAsJSON(String strURL, ArrayList<NameValuePair> params) {
 
         InputStream incomingStream = getData(strURL, CONNECTION_TIMEOUT, SOCKET_TIMEOUT, params);
         String result = "";
@@ -92,21 +106,91 @@ public class HttpUtils {
         return result;
     }
 
-    public static Object getDataAsObject(String strURL, ArrayList<NameValuePair> params) {
+    public static Object GetDataAsObject(String strURL, ArrayList<NameValuePair> params) {
         InputStream incomingStream;
+        incomingStream = getData(strURL, CONNECTION_TIMEOUT, SOCKET_TIMEOUT, params);
+        return InputStreamToObject(incomingStream);
+    }
+
+    public static String PostData(String strUrl, ArrayList<NameValuePair> postParameters) {
+        HttpClient client = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(strUrl);
+
+        InputStream incomingStream;
+
+        try {
+            httpPost.setEntity(new UrlEncodedFormEntity(postParameters));
+            HttpResponse response = client.execute(httpPost);
+            incomingStream = response.getEntity().getContent();
+            return InputStreamToJson(incomingStream);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean PostDataAsByteArray(String strURL, Object data)  {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(data);
+            oos.close();
+
+            HttpParams httpParameters = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters, CONNECTION_TIMEOUT);
+            HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT);
+            HttpClient client = new DefaultHttpClient(httpParameters) ;
+
+            //Create a new POST call from the URL supplied.
+            HttpPost httpPost = new HttpPost(strURL);
+            httpPost.setEntity(new ByteArrayEntity(baos.toByteArray())) ;
+            client.execute(httpPost);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private static Object InputStreamToObject(InputStream incomingStream) {
         ObjectInputStream objStream;
         Object result = null;
 
-        incomingStream = getData(strURL, CONNECTION_TIMEOUT, SOCKET_TIMEOUT, params);
         if (incomingStream != null) {
             try {
+                /*BufferedReader in = new BufferedReader(new InputStreamReader(incomingStream));
+                StringBuffer sb = new StringBuffer("");
+                String line = "";
+                String NL = System.getProperty("line.separator");
+                while ((line = in.readLine()) != null) {
+                    sb.append(line + NL);
+                }
+                in.close();
+                String test = sb.toString();
+                System.out.println("test: " + test);*/
+
+
                 objStream = new ObjectInputStream(incomingStream);
                 result = objStream.readObject();
             } catch (Exception e) {
                 result = null;
+                e.printStackTrace();
             }
         }
         return result;
     }
+
+    private static String InputStreamToJson(InputStream incomingStream) throws IOException {
+        BufferedReader streamReader = new BufferedReader(new InputStreamReader(
+                incomingStream, "iso-8859-1"), 8);
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        while ((line = streamReader.readLine()) != null) {
+            sb.append(line + "\n");
+        }
+        streamReader.close();
+        return sb.toString();
+    }
+
 
 }
