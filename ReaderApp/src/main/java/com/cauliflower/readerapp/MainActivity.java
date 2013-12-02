@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 import com.cauliflower.readerapp.dialogs.LoginDialogFragment;
+import com.cauliflower.readerapp.dialogs.RegisterDialogFragment;
 import com.cauliflower.readerapp.drawer.DrawerFragment;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
@@ -293,5 +294,23 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     @Override
     public void logout() {
         m_CurrentUser = null;
+    }
+
+    @Override
+    public void register(User user, String message) {
+        DialogFragment registerDialog = (DialogFragment) getFragmentManager().findFragmentByTag(RegisterDialogFragment.TAG);
+
+        if(user != null) {
+            m_CurrentUser = user;
+            if(registerDialog != null)
+                registerDialog.dismiss();
+            Toast.makeText(this, getString(R.string.register_success) + "\n" +
+                    getString(R.string.login_success) + " " + m_CurrentUser.getUsername(), Toast.LENGTH_LONG).show();
+        } else {
+            if(message.contains("Duplicate entry"))
+                Toast.makeText(this, getString(R.string.username_failure), Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(this, getString(R.string.register_failure), Toast.LENGTH_SHORT).show();
+        }
     }
 }

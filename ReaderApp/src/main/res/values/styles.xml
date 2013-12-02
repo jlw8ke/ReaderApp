@@ -30,6 +30,10 @@
         <item name="android:background">@drawable/transparent_button</item>
     </style>
 
+    <style name="ButtonStyle.Borders">
+        <item name="android:background">@drawable/transparent_button_with_border</item>
+    </style>
+
     <style name="Box_outer">
         <item name="android:layout_marginTop">?android:actionBarSize</item>
         <item name="android:layout_marginLeft">0dp</item>

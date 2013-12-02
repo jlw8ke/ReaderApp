@@ -13,10 +13,20 @@
     <string name="register">Register</string>
 
 
+    <!-- Login/RegisterDialogs -->
     <string name="username_hint">Enter username</string>
     <string name="password_hint">Enter password</string>
+    <string name="repeat_password_hint">Repeat password</string>
+    <string name="firstname_hint">Enter first name</string>
+    <string name="lastname_hint">Enter last name</string>
+    <string name="email_hint">Enter email</string>
+
     <string name="invalid_login">Invaling login credentials</string>
     <string name="connection_error">Connection error</string>
+    <string name="register_success">Registration successful</string>
+    <string name="register_failure">Registration failure</string>
+    <string name="username_failure">Username is already in use</string>
+    <string name="password_failure">Passwords must be the same</string>
     
     <!--Menu Items-->
     <string name="action_settings">Settings</string>

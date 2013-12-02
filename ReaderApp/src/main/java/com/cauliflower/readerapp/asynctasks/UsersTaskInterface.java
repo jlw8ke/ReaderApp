@@ -12,4 +12,5 @@ public interface UsersTaskInterface {
     public void onUsersReceived(ArrayList<User> userList);
     public void login(User user);
     public void logout();
+    public void register(User user, String message);
 }

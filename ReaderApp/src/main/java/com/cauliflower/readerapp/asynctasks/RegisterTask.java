@@ -10,15 +10,15 @@ import org.apache.http.NameValuePair;
 import java.util.ArrayList;
 
 /**
- * Created by jlw8k_000 on 12/1/13.
+ * Created by jlw8k_000 on 12/2/13.
  */
-public class LoginTask extends AsyncTask<String, Void, User> {
-
+public class RegisterTask extends AsyncTask<String, Void, User> {
 
     private ArrayList<NameValuePair> params;
     private UsersTaskInterface m_Interface;
+    private String m_Message;
 
-    public LoginTask(UsersTaskInterface uti, ArrayList<NameValuePair> params) {
+    public RegisterTask(UsersTaskInterface uti, ArrayList<NameValuePair> params) {
         m_Interface = uti;
         this.params = params;
     }
@@ -26,16 +26,17 @@ public class LoginTask extends AsyncTask<String, Void, User> {
     @Override
     protected User doInBackground(String... serverList) {
         String url = serverList[0];
-        String result =  HttpUtils.PostData(url, params);
+        String result = HttpUtils.PostData(url, params);
         User theUser = null;
         try {
             theUser = new Gson().fromJson(result, User.class);
         } catch(Exception e) { e.printStackTrace(); }
+        m_Message = result;
         return theUser;
     }
 
     @Override
     protected void onPostExecute(User user) {
-        m_Interface.login(user);
+        m_Interface.register(user, m_Message);
     }
 }
