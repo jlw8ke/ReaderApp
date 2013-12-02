@@ -19,26 +19,11 @@ import com.cauliflower.readerapp.R;
 public class DrawingFragment extends Fragment implements DrawingView.DrawingViewInterface{
 
 
-    private FileFragmentInterface m_Interface;
     private Paint m_Paint;
 
     @Override
     public void drawPath(Canvas canvas, Path path) {
         canvas.drawPath(path, m_Paint);
-    }
-
-    public interface FileFragmentInterface{
-
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            m_Interface = (FileFragmentInterface) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + "must implement FileFragmentInterface");
-        }
     }
 
     @Override
@@ -57,7 +42,7 @@ public class DrawingFragment extends Fragment implements DrawingView.DrawingView
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_file, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_canvas, container, false);
 
         return rootView;
     }

@@ -1,5 +1,7 @@
 package com.cauliflower.readerapp.objects;
 
+import android.net.Uri;
+
 import java.util.Date;
 
 /**
@@ -10,6 +12,7 @@ public class AppFile {
     private String author;
     private String content;
     private Date submitDate;
+    private Uri fileURI;
 
 
 

@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.cauliflower.readerapp.drawer.DrawerFragment;
 import com.cauliflower.readerapp.graphics.DrawingFragment;
+import com.cauliflower.readerapp.objects.PDFUtils;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -27,7 +28,7 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.File;
 
-public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, DrawingFragment.FileFragmentInterface{
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, FileFragment.FileFragmentInterface {
 
     final private int MENU_NEW_FILE = 0;
     final private int MENU_LOAD_FILE = 1;
@@ -198,6 +199,8 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                             // Create a file instance from the URI
                             final File file = FileUtils.getFile(uri);
                             Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                            String content = PDFUtils.parsePDF(file.getAbsolutePath());
+                            System.out.println("File content: " + content);
                         } catch (Exception e) {
                             Log.e("MainActivity", "File select error", e);
                         }

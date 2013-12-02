@@ -4,9 +4,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <WebView
-        android:id="@+id/web_view"
+    <com.cauliflower.readerapp.graphics.DrawingView
+        android:id="@+id/surface"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></WebView>
+        android:layout_height="match_parent"
+        android:paddingTop="4dp"/>
 
 </LinearLayout>
