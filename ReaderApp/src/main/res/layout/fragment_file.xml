@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <WebView
         android:id="@+id/web_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></WebView>
+        android:layout_height="match_parent"
+        android:layout_weight="1"></WebView>
+
+    <fragment
+        android:tag="@string/audio_fragment_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        class="com.cauliflower.readerapp.AudioFragment"
+        tools:layout="@layout/fragment_audio"
+        android:layout_marginTop="20dp"/>
 
 </LinearLayout>

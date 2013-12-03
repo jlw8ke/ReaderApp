@@ -2,26 +2,21 @@ package com.cauliflower.readerapp.dialogs;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cauliflower.readerapp.R;
-import com.cauliflower.readerapp.ServerConstants;
-import com.cauliflower.readerapp.asynctasks.HttpUtils;
+import com.cauliflower.readerapp.constants.ServerConstants;
 import com.cauliflower.readerapp.asynctasks.LoginTask;
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 import com.cauliflower.readerapp.encryption.MD5;
-import com.cauliflower.readerapp.objects.User;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;

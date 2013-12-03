@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
+import com.cauliflower.readerapp.constants.BundleConstants;
+
 import java.io.File;
 
 /**
@@ -18,9 +20,11 @@ import java.io.File;
 public class FileFragment extends Fragment{
 
     private final String GOOGLE_DOCS = "https://docs.google.com/viewer?url=";
+    private File m_CurrentFile;
+
+    public static final String TAG = "file_fragment";
 
     public interface FileFragmentInterface {
-        public File getCurrentFile();
     }
 
     private WebView pdfView;
@@ -40,6 +44,7 @@ public class FileFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_file, container, false);
         pdfView = (WebView) rootView.findViewById(R.id.web_view);
+        m_CurrentFile = new File(getArguments().getString(BundleConstants.CURRENT_FILE_PATH));
         return rootView;
     }
 
@@ -50,7 +55,7 @@ public class FileFragment extends Fragment{
     }
 
     private void setupPDFView() {
-        String location = m_Interface.getCurrentFile().getPath();
+        String location = m_CurrentFile.getAbsolutePath();
         if(location.endsWith(".pdf")) {
             pdfView.loadUrl(GOOGLE_DOCS + location);
         }

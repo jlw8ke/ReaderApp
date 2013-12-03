@@ -9,7 +9,7 @@
     <FrameLayout
         android:id="@+id/box_inner"
         style="@style/Box_inner"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/shadow" >
 

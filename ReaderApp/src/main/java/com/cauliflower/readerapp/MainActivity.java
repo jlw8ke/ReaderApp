@@ -2,12 +2,14 @@ package com.cauliflower.readerapp;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -18,9 +20,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
+import com.cauliflower.readerapp.constants.BundleConstants;
+import com.cauliflower.readerapp.constants.ServerConstants;
 import com.cauliflower.readerapp.dialogs.LoginDialogFragment;
 import com.cauliflower.readerapp.dialogs.RegisterDialogFragment;
-import com.cauliflower.readerapp.drawer.DrawerFragment;
+import com.cauliflower.readerapp.objects.AppFile;
+import com.cauliflower.readerapp.objects.PDFUtils;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -50,7 +55,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     private static final String PROPERTY_CURRENT_USER = "property_current_user";
     private static final String PROPERTY_CURRENT_FILE = "property_current_file";
     private User m_CurrentUser;
-    private File m_CurrentFile;
+    private AppFile m_CurrentFile;
 
     private DrawerLayout m_DrawerLayout;
     private ActionBarDrawerToggle m_DrawerToggle;
@@ -64,9 +69,9 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container_menu, new MenuFragment())
+                    .add(R.id.container_menu, new MenuFragment(), MenuFragment.TAG)
                    // .add(R.id.container_main, new DrawingFragment())
-                    .add(R.id.left_drawer, new DrawerFragment())
+                   // .add(R.id.left_drawer, new DrawerFragment())
                     .commit();
         }
         loadSavedPreferences();
@@ -151,7 +156,9 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
 
     private void loadSavedPreferences() {
         m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
-        m_CurrentFile = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_FILE, null), File.class);
+        String path = m_SharedPreferences.getString(PROPERTY_CURRENT_FILE, null);
+        if(path != null)
+            m_CurrentFile = new AppFile(path, PDFUtils.parsePDF(path));
     }
 
     @Override
@@ -164,7 +171,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         super.onPause();
         SharedPreferences.Editor editor = m_SharedPreferences.edit();
         editor.putString(PROPERTY_CURRENT_USER, new Gson().toJson(m_CurrentUser, User.class));
-        editor.putString(PROPERTY_CURRENT_FILE, new Gson().toJson(m_CurrentFile, File.class));
+        editor.putString(PROPERTY_CURRENT_FILE, m_CurrentFile.getAbsolutePath());
         editor.commit();
     }
 
@@ -231,9 +238,11 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                         final Uri uri = data.getData();
                         try {
                             // Create a file instance from the URI
-                            final File file = FileUtils.getFile(uri);
+                            String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
+                            String path = FileUtils.getPath(this, uri);
+                            final File file = new File(path.substring(6));
                             Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                            m_CurrentFile = file.getAbsoluteFile();
+                            m_CurrentFile = new AppFile(file.getAbsolutePath(), PDFUtils.parsePDF(file.getAbsolutePath()));
                             uploadFile(m_CurrentFile);
                             loadPDFIntoWindow();
                         } catch (Exception e) {
@@ -248,14 +257,17 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     }
 
     private void loadPDFIntoWindow() {
-        getFragmentManager().beginTransaction()
-            .add(R.id.container_main, new FileFragment())
-            .commit();
-    }
+        Bundle args = new Bundle();
+        args.putString(BundleConstants.CURRENT_FILE_PATH, m_CurrentFile.getAbsolutePath());
 
-    @Override
-    public File getCurrentFile() {
-        return m_CurrentFile;
+        
+
+        Fragment fileFragment = new FileFragment();
+        fileFragment.setArguments(args);
+
+        getFragmentManager().beginTransaction()
+            .add(R.id.container_main, fileFragment, FileFragment.TAG)
+            .commit();
     }
 
     private void uploadFile(File aFile) {
@@ -268,14 +280,10 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     -----------------------------------------------------------------------------------
     */
     @Override
-    public void onUsersAdded(ArrayList<User> userList) {
-
-    }
+    public void onUsersAdded(ArrayList<User> userList) {}
 
     @Override
-    public void onUsersReceived(ArrayList<User> userList) {
-
-    }
+    public void onUsersReceived(ArrayList<User> userList) {}
 
     @Override
     public void login(User user) {
@@ -289,6 +297,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         } else {
             Toast.makeText(this, getString(R.string.login_failure), Toast.LENGTH_SHORT).show();
         }
+
     }
 
     @Override

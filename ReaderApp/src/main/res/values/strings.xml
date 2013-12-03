@@ -41,4 +41,6 @@
     <string name="home_import_file">Import File from Cloud</string>
     <string name="home_dropbox_file">New File from Dropbox</string>
 
+    <string name="audio_fragment_tag">audio_fragment</string>
+
 </resources>

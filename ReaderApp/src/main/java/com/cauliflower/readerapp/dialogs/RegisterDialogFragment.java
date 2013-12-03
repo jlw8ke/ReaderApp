@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cauliflower.readerapp.R;
-import com.cauliflower.readerapp.ServerConstants;
+import com.cauliflower.readerapp.constants.ServerConstants;
 import com.cauliflower.readerapp.asynctasks.RegisterTask;
 import com.cauliflower.readerapp.asynctasks.UsersTaskInterface;
 import com.cauliflower.readerapp.encryption.MD5;

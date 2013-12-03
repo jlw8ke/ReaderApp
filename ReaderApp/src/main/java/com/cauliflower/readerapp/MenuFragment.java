@@ -30,6 +30,8 @@ public class MenuFragment extends Fragment {
     ImageButton m_DropboxFileButton;
     MenuFragmentInterface m_Interface;
 
+    public static final String TAG = "menu_fragment";
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -47,6 +49,7 @@ public class MenuFragment extends Fragment {
         m_LoadFileButton = (ImageButton) rootView.findViewById(R.id.menu_load_file);
         m_ImportFileButton = (ImageButton) rootView.findViewById(R.id.menu_import_file);
         m_DropboxFileButton = (ImageButton) rootView.findViewById(R.id.menu_dropbox_file);
+        m_LoadFileButton.setVisibility(View.GONE);
 
         setLongClickListeners();
 
@@ -63,10 +66,6 @@ public class MenuFragment extends Fragment {
                 m_Interface.menuLoadFile();
             }
         });
-
-
-
-
 
         m_ImportFileButton.setOnClickListener(new View.OnClickListener() {
             @Override

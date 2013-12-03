@@ -1,4 +1,4 @@
-package com.cauliflower.readerapp;
+package com.cauliflower.readerapp.constants;
 
 /**
  * Created by jlw8k_000 on 12/1/13.
