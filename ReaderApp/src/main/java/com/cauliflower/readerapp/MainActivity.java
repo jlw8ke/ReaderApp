@@ -29,6 +29,7 @@ import com.cauliflower.readerapp.objects.AppFile;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.session.AccessTokenPair;
 import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
 import com.dropbox.dropboxchooser.DbxChooser;
@@ -38,7 +39,8 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, LocalFileFragment.FileInterface, UsersTaskInterface {
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface,
+        LocalFileFragment.FileInterface, UsersTaskInterface, DropboxFileFragment.DropboxFileInterface {
 
     private static final int NEW_FILE_REQUEST_CODE = 6384;
     private static final int DBX_CHOOSER_REQUEST = 3000;
@@ -52,6 +54,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     final static private String APP_KEY = "s3voc9raoqvgdj6";
     final static private String APP_SECRET = "ez81gny641pdtjq";
     final static private Session.AccessType ACCESS_TYPE = Session.AccessType.DROPBOX;
+    private AccessTokenPair m_Tokens;
     private DropboxAPI<AndroidAuthSession> mDBApi;
 
     private static SharedPreferences m_SharedPreferences;
@@ -73,8 +76,8 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
                     .add(R.id.container_menu, new MenuFragment(), MenuFragment.TAG)
-                   // .add(R.id.container_main, new DrawingFragment())
-                   // .add(R.id.left_drawer, new DrawerFragment())
+                            // .add(R.id.container_main, new DrawingFragment())
+                            // .add(R.id.left_drawer, new DrawerFragment())
                     .commit();
         }
         loadSavedPreferences();
@@ -82,13 +85,20 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+
+        if (mDBApi == null) {
+            AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
+            AndroidAuthSession session = new AndroidAuthSession(appKeys, ACCESS_TYPE);
+            mDBApi = new DropboxAPI<AndroidAuthSession>(session);
+
+            DropboxUtils.DropboxAuthenticate(mDBApi, this);
+        }
     }
 
 
-
-    private void setupHomeDrawer(){
+    private void setupHomeDrawer() {
         m_DrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        m_DrawerToggle =  new ActionBarDrawerToggle(this, m_DrawerLayout, R.drawable.ic_navigation_drawer, R.string.drawer_open, R.string.drawer_closed) {
+        m_DrawerToggle = new ActionBarDrawerToggle(this, m_DrawerLayout, R.drawable.ic_navigation_drawer, R.string.drawer_open, R.string.drawer_closed) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -125,15 +135,15 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         MenuItem login = menu.findItem(R.id.action_login);
         MenuItem logout = menu.findItem(R.id.action_logout);
 
-        if(m_CurrentUser == null) {
-            if(login != null)
+        if (m_CurrentUser == null) {
+            if (login != null)
                 login.setVisible(true);
-            if(logout != null)
+            if (logout != null)
                 logout.setVisible(false);
         } else {
-            if(login != null)
+            if (login != null)
                 login.setVisible(false);
-            if(logout != null)
+            if (logout != null)
                 logout.setVisible(true);
         }
         return true;
@@ -160,13 +170,25 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     private void loadSavedPreferences() {
         m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
         String path = m_SharedPreferences.getString(PROPERTY_CURRENT_FILE, null);
-        if(path != null)
+        if (path != null)
             m_CurrentFile = new AppFile(path, FileParser.parse(path));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (mDBApi != null) {
+            if (mDBApi.getSession().authenticationSuccessful()) {
+                try {
+                    mDBApi.getSession().finishAuthentication();
+                    m_Tokens = mDBApi.getSession().getAccessTokenPair();
+                } catch (IllegalStateException e) {
+                    Log.i("DbAuthLog", "Error authenticating", e);
+                }
+            }
+        }
+
     }
 
     @Override
@@ -174,7 +196,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         super.onPause();
         SharedPreferences.Editor editor = m_SharedPreferences.edit();
         editor.putString(PROPERTY_CURRENT_USER, new Gson().toJson(m_CurrentUser, User.class));
-        if(m_CurrentFile != null)
+        if (m_CurrentFile != null)
             editor.putString(PROPERTY_CURRENT_FILE, m_CurrentFile.getAbsolutePath());
         editor.commit();
     }
@@ -209,9 +231,9 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         showChooser(MENU_DROPBOX_FILE);
     }
 
-    private void showChooser(int choice){
+    private void showChooser(int choice) {
         Intent target = FileUtils.createGetContentIntent();
-        switch(choice) {
+        switch (choice) {
             case MENU_NEW_FILE:
                 Intent intent = Intent.createChooser(target, getString(R.string.home_new_file));
                 try {
@@ -225,13 +247,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
             case MENU_IMPORT_FILE:
                 break;
             case MENU_DROPBOX_FILE:
-                if(mDBApi == null) {
-                    AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
-                    AndroidAuthSession session = new AndroidAuthSession(appKeys, ACCESS_TYPE);
-                    mDBApi = new DropboxAPI<AndroidAuthSession>(session);
 
-                    DropboxUtils.DropboxAuthenticate(mDBApi, this);
-                }
                 DbxChooser mChooser = new DbxChooser(APP_KEY);
                 mChooser.forResultType(DbxChooser.ResultType.DIRECT_LINK)
                         .launch(this, DBX_CHOOSER_REQUEST);
@@ -245,16 +261,16 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
+        switch (requestCode) {
             case NEW_FILE_REQUEST_CODE:
-                if(resultCode == RESULT_OK) {
-                    if(data != null) {
+                if (resultCode == RESULT_OK) {
+                    if (data != null) {
                         final Uri uri = data.getData();
                         try {
                             // Create a file instance from the URI
                             String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
                             String path = FileUtils.getPath(this, uri);
-                            if(path.startsWith("file://"))
+                            if (path.startsWith("file://"))
                                 path = path.substring(6);
                             final File file = new File(path);
                             //Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
@@ -268,10 +284,19 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                 break;
             case DBX_CHOOSER_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    if(data != null) {
+                    if (data != null) {
                         DbxChooser.Result result = new DbxChooser.Result(data);
                         Log.d("MainActivity", "Link to selected file: " + result.getLink());
 
+                        Bundle args = new Bundle();
+                        args.putString(BundleConstants.CURRENT_FILE_PATH, result.getLink().toString());
+                        args.putString(BundleConstants.DROPBOX, result.getName().toString());
+                        Fragment fileFragment = new DropboxFileFragment();
+                        fileFragment.setArguments(args);
+
+                        getFragmentManager().beginTransaction()
+                                .replace(R.id.container_main, fileFragment, DropboxFileFragment.TAG)
+                                .commit();
                     }
                 }
             default:
@@ -288,8 +313,8 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         fileFragment.setArguments(args);
 
         getFragmentManager().beginTransaction()
-            .replace(R.id.container_main, fileFragment, LocalFileFragment.TAG)
-            .commit();
+                .replace(R.id.container_main, fileFragment, LocalFileFragment.TAG)
+                .commit();
     }
 
     /*
@@ -298,18 +323,20 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     -----------------------------------------------------------------------------------
     */
     @Override
-    public void onUsersAdded(ArrayList<User> userList) {}
+    public void onUsersAdded(ArrayList<User> userList) {
+    }
 
     @Override
-    public void onUsersReceived(ArrayList<User> userList) {}
+    public void onUsersReceived(ArrayList<User> userList) {
+    }
 
     @Override
     public void login(User user) {
         DialogFragment loginDialog = (DialogFragment) getFragmentManager().findFragmentByTag(LoginDialogFragment.TAG);
 
-        if(user != null) {
+        if (user != null) {
             m_CurrentUser = user;
-            if(loginDialog != null)
+            if (loginDialog != null)
                 loginDialog.dismiss();
             Toast.makeText(this, getString(R.string.login_success) + " " + m_CurrentUser.getUsername(), Toast.LENGTH_SHORT).show();
         } else {
@@ -332,17 +359,22 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     public void register(User user, String message) {
         DialogFragment registerDialog = (DialogFragment) getFragmentManager().findFragmentByTag(RegisterDialogFragment.TAG);
 
-        if(user != null) {
+        if (user != null) {
             m_CurrentUser = user;
-            if(registerDialog != null)
+            if (registerDialog != null)
                 registerDialog.dismiss();
             Toast.makeText(this, getString(R.string.register_success) + "\n" +
                     getString(R.string.login_success) + " " + m_CurrentUser.getUsername(), Toast.LENGTH_LONG).show();
         } else {
-            if(message.contains("Duplicate entry"))
+            if (message.contains("Duplicate entry"))
                 Toast.makeText(this, getString(R.string.username_failure), Toast.LENGTH_SHORT).show();
             else
                 Toast.makeText(this, getString(R.string.register_failure), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public DropboxAPI<AndroidAuthSession> getApiSession() {
+        return mDBApi;
     }
 }

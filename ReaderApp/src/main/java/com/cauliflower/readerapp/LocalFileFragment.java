@@ -46,7 +46,7 @@ public class LocalFileFragment extends Fragment implements FileUploadTask.FileUp
 
     private TextToSpeech speechManager;
 
-    public static final String TAG = "file_fragment";
+    public static final String TAG = "local_file_fragment";
 
     public interface FileInterface {
     }

@@ -12,21 +12,12 @@ import com.dropbox.client2.session.AccessTokenPair;
  */
 public class DropboxUtils {
 
-    public static boolean DropboxAuthenticate(DropboxAPI<AndroidAuthSession> dropboxAPI, Context context) {
+    public static void DropboxAuthenticate(DropboxAPI<AndroidAuthSession> dropboxAPI, Context context) {
         if(dropboxAPI == null)
-            return false;
+            return;
 
         dropboxAPI.getSession().startAuthentication(context);
-        if (dropboxAPI.getSession().authenticationSuccessful()) {
-            try {
-                dropboxAPI.getSession().finishAuthentication();
-                AccessTokenPair tokens = dropboxAPI.getSession().getAccessTokenPair();
-                return true;
-            } catch (IllegalStateException e) {
-                Log.i("DbAuthLog", "Error authenticating", e);
-            }
-        }
-        return false;
+
     }
 
 }
