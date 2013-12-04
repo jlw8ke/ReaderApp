@@ -35,7 +35,7 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, FileFragment.FileInterface, UsersTaskInterface {
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, LocalFileFragment.FileInterface, UsersTaskInterface {
 
     private static final int NEW_FILE_REQUEST_CODE = 6384;
 
@@ -260,11 +260,11 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         args.putString(BundleConstants.CURRENT_FILE_PATH, m_CurrentFile.getAbsolutePath());
         args.putString(BundleConstants.CURRENT_USER, new Gson().toJson(m_CurrentUser));
 
-        Fragment fileFragment = new FileFragment();
+        Fragment fileFragment = new LocalFileFragment();
         fileFragment.setArguments(args);
 
         getFragmentManager().beginTransaction()
-            .replace(R.id.container_main, fileFragment, FileFragment.TAG)
+            .replace(R.id.container_main, fileFragment, LocalFileFragment.TAG)
             .commit();
     }
 
