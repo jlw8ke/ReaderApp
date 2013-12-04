@@ -240,8 +240,10 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                             // Create a file instance from the URI
                             String baseDir = Environment.getExternalStorageDirectory().getAbsolutePath();
                             String path = FileUtils.getPath(this, uri);
-                            final File file = new File(path.substring(6));
-                            Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+                            if(path.startsWith("file://"))
+                                path = path.substring(6);
+                            final File file = new File(path);
+                            //Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
                             m_CurrentFile = new AppFile(file.getAbsolutePath(), FileParser.parse(file.getAbsolutePath()));
                             loadPDFIntoWindow();
                         } catch (Exception e) {
