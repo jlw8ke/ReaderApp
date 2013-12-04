@@ -65,6 +65,12 @@ public class LocalFileFragment extends Fragment implements FileUploadTask.FileUp
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        speechManager = new TextToSpeech(getActivity(), this);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_file, container, false);
         pdfView = (WebView) rootView.findViewById(R.id.web_view);
@@ -83,7 +89,15 @@ public class LocalFileFragment extends Fragment implements FileUploadTask.FileUp
     @Override
     public void onResume() {
         super.onResume();
-        speechManager = new TextToSpeech(getActivity(), this);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (speechManager != null) {
+            speechManager.stop();
+            speechManager.shutdown();
+        }
+        super.onDestroy();
     }
 
     @Override
