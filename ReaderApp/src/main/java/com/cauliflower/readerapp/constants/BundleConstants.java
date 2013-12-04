@@ -5,4 +5,5 @@ package com.cauliflower.readerapp.constants;
  */
 public class BundleConstants {
     public final static String CURRENT_FILE_PATH = "current_file";
+    public final static String CURRENT_USER = "current_user";
 }

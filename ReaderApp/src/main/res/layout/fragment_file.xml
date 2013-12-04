@@ -11,12 +11,6 @@
         android:layout_height="match_parent"
         android:layout_weight="1"></WebView>
 
-    <fragment
-        android:tag="@string/audio_fragment_tag"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        class="com.cauliflower.readerapp.AudioFragment"
-        tools:layout="@layout/fragment_audio"
-        android:layout_marginTop="20dp"/>
+    <include layout="@layout/fragment_audio"/>
 
 </LinearLayout>

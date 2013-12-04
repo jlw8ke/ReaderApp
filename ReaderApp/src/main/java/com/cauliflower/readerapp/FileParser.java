@@ -1,4 +1,4 @@
-package com.cauliflower.readerapp.objects;
+package com.cauliflower.readerapp;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.io.RandomAccessSourceFactory;
@@ -12,8 +12,15 @@ import java.io.IOException;
 /**
  * Created by jlw8k_000 on 12/1/13.
  */
-public class PDFUtils {
-    public static String parsePDF(String fileLocation) {
+public class FileParser {
+    public static String parse(String fileLocation) {
+        if(fileLocation.endsWith(".pdf"))
+            return parsePDF(fileLocation);
+        else
+            return "";
+    }
+
+    private static String parsePDF(String fileLocation) {
         String content = "";
 
         try {

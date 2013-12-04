@@ -1,44 +1,39 @@
-package com.cauliflower.readerapp.asynctasks;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
+package com.cauliflower.readerapp;
 
 import android.util.Log;
 
-import com.cauliflower.readerapp.objects.User;
+import com.cauliflower.readerapp.constants.ServerConstants;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.nio.Buffer;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jlw8k_000 on 10/29/13.
@@ -63,7 +58,7 @@ public class HttpUtils {
         HttpConnectionParams.setSoTimeout(httpParameters, socketTimeout);
 
         client = new DefaultHttpClient(httpParameters);
-        if(params != null)
+        if (params != null)
             strURL += "?" + URLEncodedUtils.format(params, "utf-8");
 
         Log.i("HttpUtils", "The url for the GET: " + strURL);
@@ -73,7 +68,7 @@ public class HttpUtils {
 
             //Check for redirect
             int statusCode = response.getStatusLine().getStatusCode();
-            if(statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY)
+            if (statusCode == HttpStatus.SC_MOVED_PERMANENTLY || statusCode == HttpStatus.SC_MOVED_TEMPORARILY)
                 result = null;
 
         } catch (Exception e) {
@@ -89,15 +84,7 @@ public class HttpUtils {
 
         if (incomingStream != null) {
             try {
-                BufferedReader streamReader = new BufferedReader(new InputStreamReader(
-                        incomingStream, "iso-8859-1"), 8);
-                StringBuilder sb = new StringBuilder();
-                String line = "";
-                while ((line = streamReader.readLine()) != null) {
-                    sb.append(line + "\n");
-                }
-                streamReader.close();
-                result = sb.toString();
+                result = InputStreamToJson(incomingStream);
             } catch (Exception e) {
                 Log.e("HttpUtils", "Error converting result " + e.toString());
             }
@@ -123,13 +110,34 @@ public class HttpUtils {
             HttpResponse response = client.execute(httpPost);
             incomingStream = response.getEntity().getContent();
             return InputStreamToJson(incomingStream);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static boolean PostDataAsByteArray(String strURL, Object data)  {
+    public static String UploadFile(String strURL, File file) {
+        HttpClient client = new DefaultHttpClient();
+        HttpPost httpPost = new HttpPost(strURL);
+        try {
+            MultipartEntity entity = new MultipartEntity();
+            entity.addPart(ServerConstants.FILE_CONTENT, new FileBody(file));
+
+            InputStream incomingStream;
+            System.out.println(entity.toString());
+            httpPost.setEntity(entity);
+            HttpResponse response = client.execute(httpPost);
+            incomingStream = response.getEntity().getContent();
+            return InputStreamToJson(incomingStream);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+    public static boolean PostDataAsByteArray(String strURL, Object data) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -139,11 +147,11 @@ public class HttpUtils {
             HttpParams httpParameters = new BasicHttpParams();
             HttpConnectionParams.setConnectionTimeout(httpParameters, CONNECTION_TIMEOUT);
             HttpConnectionParams.setSoTimeout(httpParameters, SOCKET_TIMEOUT);
-            HttpClient client = new DefaultHttpClient(httpParameters) ;
+            HttpClient client = new DefaultHttpClient(httpParameters);
 
             //Create a new POST call from the URL supplied.
             HttpPost httpPost = new HttpPost(strURL);
-            httpPost.setEntity(new ByteArrayEntity(baos.toByteArray())) ;
+            httpPost.setEntity(new ByteArrayEntity(baos.toByteArray()));
             client.execute(httpPost);
             return true;
         } catch (IOException e) {

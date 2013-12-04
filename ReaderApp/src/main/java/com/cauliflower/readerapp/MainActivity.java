@@ -25,7 +25,6 @@ import com.cauliflower.readerapp.constants.ServerConstants;
 import com.cauliflower.readerapp.dialogs.LoginDialogFragment;
 import com.cauliflower.readerapp.dialogs.RegisterDialogFragment;
 import com.cauliflower.readerapp.objects.AppFile;
-import com.cauliflower.readerapp.objects.PDFUtils;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
@@ -36,7 +35,7 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, FileFragment.FileFragmentInterface, UsersTaskInterface {
+public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, FileFragment.FileInterface, UsersTaskInterface {
 
     private static final int NEW_FILE_REQUEST_CODE = 6384;
 
@@ -158,7 +157,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         m_CurrentUser = new Gson().fromJson(m_SharedPreferences.getString(PROPERTY_CURRENT_USER, null), User.class);
         String path = m_SharedPreferences.getString(PROPERTY_CURRENT_FILE, null);
         if(path != null)
-            m_CurrentFile = new AppFile(path, PDFUtils.parsePDF(path));
+            m_CurrentFile = new AppFile(path, FileParser.parse(path));
     }
 
     @Override
@@ -171,7 +170,8 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         super.onPause();
         SharedPreferences.Editor editor = m_SharedPreferences.edit();
         editor.putString(PROPERTY_CURRENT_USER, new Gson().toJson(m_CurrentUser, User.class));
-        editor.putString(PROPERTY_CURRENT_FILE, m_CurrentFile.getAbsolutePath());
+        if(m_CurrentFile != null)
+            editor.putString(PROPERTY_CURRENT_FILE, m_CurrentFile.getAbsolutePath());
         editor.commit();
     }
 
@@ -242,8 +242,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                             String path = FileUtils.getPath(this, uri);
                             final File file = new File(path.substring(6));
                             Toast.makeText(this, "File Selected: "+file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                            m_CurrentFile = new AppFile(file.getAbsolutePath(), PDFUtils.parsePDF(file.getAbsolutePath()));
-                            uploadFile(m_CurrentFile);
+                            m_CurrentFile = new AppFile(file.getAbsolutePath(), FileParser.parse(file.getAbsolutePath()));
                             loadPDFIntoWindow();
                         } catch (Exception e) {
                             Log.e("MainActivity", "File select error", e);
@@ -259,19 +258,14 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     private void loadPDFIntoWindow() {
         Bundle args = new Bundle();
         args.putString(BundleConstants.CURRENT_FILE_PATH, m_CurrentFile.getAbsolutePath());
-
-        
+        args.putString(BundleConstants.CURRENT_USER, new Gson().toJson(m_CurrentUser));
 
         Fragment fileFragment = new FileFragment();
         fileFragment.setArguments(args);
 
         getFragmentManager().beginTransaction()
-            .add(R.id.container_main, fileFragment, FileFragment.TAG)
+            .replace(R.id.container_main, fileFragment, FileFragment.TAG)
             .commit();
-    }
-
-    private void uploadFile(File aFile) {
-
     }
 
     /*
@@ -303,6 +297,11 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     @Override
     public void logout() {
         m_CurrentUser = null;
+    }
+
+    @Override
+    public User getCurrentUser() {
+        return m_CurrentUser;
     }
 
     @Override

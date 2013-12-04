@@ -2,6 +2,7 @@ package com.cauliflower.readerapp.asynctasks;
 
 import android.os.AsyncTask;
 
+import com.cauliflower.readerapp.HttpUtils;
 import com.cauliflower.readerapp.objects.User;
 import com.google.gson.Gson;
 

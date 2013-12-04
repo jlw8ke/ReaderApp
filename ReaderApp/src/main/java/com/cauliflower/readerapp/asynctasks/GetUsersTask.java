@@ -3,6 +3,7 @@ package com.cauliflower.readerapp.asynctasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.cauliflower.readerapp.HttpUtils;
 import com.cauliflower.readerapp.objects.User;
 
 import java.util.ArrayList;

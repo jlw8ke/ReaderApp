@@ -13,4 +13,5 @@ public interface UsersTaskInterface {
     public void login(User user);
     public void logout();
     public void register(User user, String message);
+    public User getCurrentUser();
 }
