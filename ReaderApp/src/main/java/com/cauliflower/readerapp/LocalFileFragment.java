@@ -80,6 +80,9 @@ public class LocalFileFragment extends Fragment implements FileUploadTask.FileUp
         fastForwardButton = (ImageButton) rootView.findViewById(R.id.fast_forward_btn);
         rewindButton = (ImageButton) rootView.findViewById(R.id.rewind_btn);
 
+        fastForwardButton.setVisibility(View.GONE);
+        rewindButton.setVisibility(View.GONE);
+
         updateArguments();
         setupPDFView();
         setupAudioButtons();

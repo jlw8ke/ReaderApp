@@ -50,6 +50,7 @@ public class MenuFragment extends Fragment {
         m_ImportFileButton = (ImageButton) rootView.findViewById(R.id.menu_import_file);
         m_DropboxFileButton = (ImageButton) rootView.findViewById(R.id.menu_dropbox_file);
         m_LoadFileButton.setVisibility(View.GONE);
+        m_ImportFileButton.setVisibility(View.GONE);
 
         setLongClickListeners();
 

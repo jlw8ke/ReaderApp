@@ -1,1 +1,1 @@
-include ':ReaderApp', ':FileChooser'
+include ':ReaderApp', ':FileChooser', ':DropboxChooser'

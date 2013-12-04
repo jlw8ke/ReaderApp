@@ -24,11 +24,14 @@ import com.cauliflower.readerapp.constants.BundleConstants;
 import com.cauliflower.readerapp.constants.ServerConstants;
 import com.cauliflower.readerapp.dialogs.LoginDialogFragment;
 import com.cauliflower.readerapp.dialogs.RegisterDialogFragment;
+import com.cauliflower.readerapp.dropbox.DropboxUtils;
 import com.cauliflower.readerapp.objects.AppFile;
 import com.cauliflower.readerapp.objects.User;
 import com.dropbox.client2.*;
 import com.dropbox.client2.android.AndroidAuthSession;
+import com.dropbox.client2.session.AppKeyPair;
 import com.dropbox.client2.session.Session;
+import com.dropbox.dropboxchooser.DbxChooser;
 import com.google.gson.Gson;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
@@ -38,6 +41,7 @@ import java.util.ArrayList;
 public class MainActivity extends Activity implements MenuFragment.MenuFragmentInterface, LocalFileFragment.FileInterface, UsersTaskInterface {
 
     private static final int NEW_FILE_REQUEST_CODE = 6384;
+    private static final int DBX_CHOOSER_REQUEST = 3000;
 
     final private int MENU_NEW_FILE = 0;
     final private int MENU_LOAD_FILE = 1;
@@ -138,8 +142,8 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
+            //case R.id.action_settings:
+            //    return true;
             case R.id.action_login:
                 DialogFragment loginDialog = LoginDialogFragment.newInstance(ServerConstants.SERVER_LOGIN_DEBUG);
                 loginDialog.show(getFragmentManager(), LoginDialogFragment.TAG);
@@ -221,6 +225,16 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
             case MENU_IMPORT_FILE:
                 break;
             case MENU_DROPBOX_FILE:
+                if(mDBApi == null) {
+                    AppKeyPair appKeys = new AppKeyPair(APP_KEY, APP_SECRET);
+                    AndroidAuthSession session = new AndroidAuthSession(appKeys, ACCESS_TYPE);
+                    mDBApi = new DropboxAPI<AndroidAuthSession>(session);
+
+                    DropboxUtils.DropboxAuthenticate(mDBApi, this);
+                }
+                DbxChooser mChooser = new DbxChooser(APP_KEY);
+                mChooser.forResultType(DbxChooser.ResultType.DIRECT_LINK)
+                        .launch(this, DBX_CHOOSER_REQUEST);
                 break;
             default:
                 break;
@@ -252,6 +266,14 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
                     }
                 }
                 break;
+            case DBX_CHOOSER_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    if(data != null) {
+                        DbxChooser.Result result = new DbxChooser.Result(data);
+                        Log.d("MainActivity", "Link to selected file: " + result.getLink());
+
+                    }
+                }
             default:
                 break;
         }
