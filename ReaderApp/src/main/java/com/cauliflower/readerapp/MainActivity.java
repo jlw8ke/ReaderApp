@@ -181,6 +181,7 @@ public class MainActivity extends Activity implements MenuFragment.MenuFragmentI
         if (mDBApi != null) {
             if (mDBApi.getSession().authenticationSuccessful()) {
                 try {
+
                     mDBApi.getSession().finishAuthentication();
                     m_Tokens = mDBApi.getSession().getAccessTokenPair();
                 } catch (IllegalStateException e) {
